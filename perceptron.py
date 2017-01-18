@@ -24,12 +24,10 @@ def normalize(vec):
     l2norm = math.sqrt(inner(vec, vec))
     if l2norm == 0:
         return vec
-    for i in range(len(vec)):
-        vec[i] = vec[i] * 1.0 / l2norm
-    return vec
+    return [num * 1.0 / l2norm for num in vec]
 
 
-def train(samples, limit, verbose=False, norm=False):
+def train(samples, limit, verbose=False, norm=True):
     """ Train a perceptron with the set of samples. """
     """ samples is a list of pairs of the form [input vector, desired output] """
     """ limit is a limit on the number of epochs """
@@ -69,7 +67,7 @@ def train(samples, limit, verbose=False, norm=False):
         print 'final weights = {}'.format([round(x, 3) for x in weights])
     return [epoch-1, wrong, weights]
 
-def test(samples, weights, verbose=False, norm=False):
+def test(samples, weights, verbose=False, norm=True):
     """ Test a perceptron with the set of samples. """
     if norm:
         for i in range(len(samples)):
@@ -98,6 +96,8 @@ majoritySamples = [[[0, 0, 0], 0], [[0, 0, 1], 0], [[0, 1, 0], 0], \
 [[1, 0, 0], 0], [[0, 1, 1], 1], [[1, 0, 1], 1], \
 [[1, 1, 0], 1], [[1, 1, 1], 1]]
 
-weights = train(cancer.cancertrainingSamples, 100, verbose=True)[2]
-test(cancer.cancertrainingSamples, weights, verbose=False)
-test(cancer.cancertestSamples, weights, verbose=False)
+train(nandSamples, 100, verbose=True)
+
+# weights = train(cancer.cancertrainingSamples, 100, verbose=True)[2]
+# test(cancer.cancertrainingSamples, weights, verbose=False)
+# test(cancer.cancertestSamples, weights, verbose=False)
