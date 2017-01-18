@@ -1,3 +1,4 @@
+# code based on Prof. Keller's starter code
 def perceptron(weights, input):
     """ The transfer function for a Perceptron """
     """     weights is the weight vector """
