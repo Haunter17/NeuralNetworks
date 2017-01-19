@@ -86,7 +86,7 @@ def test(samples, weights, verbose=False, norm=True):
             if verbose:
                 print '{} : input = {} desired = {} output = {} error = {}'\
                 .format(wrong, [round(x, 3) for x in inputSamp], desired, output, error)
-    print 'percentage of errors = {}'.format(round(1 - wrong * 1.0 / nsamples, 4))
+    print 'percentage of errors = {}'.format(round(wrong * 1.0 / nsamples, 4))
     return wrong
 
 implies = [[[0, 0], 1], [[0, 1], 1], [[1, 0], 0], [[1, 1], 1]]
@@ -96,8 +96,8 @@ majoritySamples = [[[0, 0, 0], 0], [[0, 0, 1], 0], [[0, 1, 0], 0], \
 [[1, 0, 0], 0], [[0, 1, 1], 1], [[1, 0, 1], 1], \
 [[1, 1, 0], 1], [[1, 1, 1], 1]]
 
-train(nandSamples, 100, verbose=True)
+# weights = train(nandSamples, 100, verbose=True)[2]
+# test(nandSamples, weights, verbose=False)
 
-# weights = train(cancer.cancertrainingSamples, 100, verbose=True)[2]
-# test(cancer.cancertrainingSamples, weights, verbose=False)
-# test(cancer.cancertestSamples, weights, verbose=False)
+weights = train(cancer.cancertrainingSamples, 100, verbose=True)[2]
+test(cancer.cancertestSamples, weights, verbose=False)
