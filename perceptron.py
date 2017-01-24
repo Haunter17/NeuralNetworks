@@ -34,11 +34,6 @@ def train(samples, limit, verbose=False, norm=True):
     """ Returns a list of the number of epochs used, """
     """                   the number wrong at the end, and """
     """                   the final weights """
-    # normalize if necessary
-    if norm:
-        for i in range(len(samples)):
-            samples[i][0] = normalize(samples[i][0])
-
     weights = [0] + map(lambda x:0, samples[0][0]) # initialize weights to all 0
     n = len(weights)   
     nsamples = len(samples)
@@ -51,6 +46,9 @@ def train(samples, limit, verbose=False, norm=True):
         wrong = 0
         for sample in samples:
             inputSamp = [1] + sample[0]
+            # normalize sample if necessary
+            if norm:
+                inputSamp = normalize(inputSamp)
             desired = sample[1]
             output = perceptron(weights, inputSamp)
             error = desired - output
@@ -69,15 +67,14 @@ def train(samples, limit, verbose=False, norm=True):
 
 def test(samples, weights, verbose=False, norm=True):
     """ Test a perceptron with the set of samples. """
-    if norm:
-        for i in range(len(samples)):
-            samples[i][0] = normalize(samples[i][0])
     n = len(weights)   
     nsamples = len(samples)
 
     wrong = 0
     for sample in samples:
         inputSamp = [1] + sample[0]
+        if norm:
+            inputSamp = normalize(inputSamp)
         desired = sample[1]
         output = perceptron(weights, inputSamp)
         error = desired - output
@@ -96,8 +93,9 @@ majoritySamples = [[[0, 0, 0], 0], [[0, 0, 1], 0], [[0, 1, 0], 0], \
 [[1, 0, 0], 0], [[0, 1, 1], 1], [[1, 0, 1], 1], \
 [[1, 1, 0], 1], [[1, 1, 1], 1]]
 
-# weights = train(nandSamples, 100, verbose=True)[2]
+# weights = train(nandSamples, 100, verbose=True, norm=True)[2]
 # test(nandSamples, weights, verbose=False)
 
-weights = train(cancer.cancertrainingSamples, 100, verbose=True)[2]
-test(cancer.cancertestSamples, weights, verbose=False)
+weights = train(cancer.cancertrainingSamples, 100, verbose=True, norm=True)[2]
+# test(cancer.cancertrainingSamples, weights, verbose=False, norm=False)
+test(cancer.cancertestSamples, weights, verbose=False, norm=True)
