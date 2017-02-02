@@ -127,7 +127,7 @@ class FFnet:
                 factor = deriv(nn.act[layer][preNeuron], nn.output[layer][preNeuron])
                 sum = 0
                 for postNeuron in range(nn.size[layer+1]):
-                    sum += nn.weight[layer+1][postNeuron][preNeuron] \
+                    sum += nn.weight[layer + 1][postNeuron][preNeuron] \
                           *nn.sensitivity[layer+1][postNeuron]
                 nn.sensitivity[layer][preNeuron] = sum*factor
 
@@ -326,13 +326,57 @@ def cancer():
     nnet.train(cancerTrainingSamples, 2000, 100, False)
     nnet.assessAll(cancerTestSamples)
 
+def iff():
+    iffSamples = [[[0, 0], [1]], [[0, 1], [0]], [[1, 0], [0]], [[1, 1], [1]]]
+    nnet = FFnet("iff", [2,3,1], [logsig, logsig], [0.5, 0.45])
+    nnet.describe(False)
+    nnet.train(iffSamples, 10000, 100, False)
+
+def autoencoder():
+    AEsamples = [
+    [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]],
+    [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]],
+    [[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]],
+    [[0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]],
+    [[0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]],
+    [[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]],
+    [[0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]],
+    [[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]],
+    [[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]],
+    [[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]],
+    [[0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]],
+    [[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]],
+    [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]],
+    [[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+    [[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+    [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+    ]
+
+    nnet = FFnet("autoencoder", [16,4,16], [logsig, logsig], [0.5, 0.2])
+    nnet.describe(False)
+    nnet.train(AEsamples, 10000, 100, False)
+
+def wine():
+    import wine
+    wineSamples = wine.data
+    shuffle(wineSamples)
+    wineTrainingSamples = wineSamples[:len(wineSamples) * 2 / 3]
+    wineTestSamples = wineSamples[len(wineSamples) * 2 / 3:]
+    nnet = FFnet("wine", [13,15,15,15,3], [logsig, logsig, logsig, logsig], [0.5, 0.5, 0.5, 0.2])
+    nnet.describe(False)
+    nnet.train(wineTrainingSamples, 10000, 1, False)
+    nnet.assessAll(wineTestSamples)
+
 def main():
-    xor( )
-    xor2()
-    vh()
-    letters()
-    toBinary()
-    sine()
-    cancer()
+    # xor( )
+    # xor2()
+    # vh()
+    # letters()
+    # toBinary()
+    # sine()
+    # cancer()
+    # iff()
+    # autoencoder()
+    wine()
     
 main()
