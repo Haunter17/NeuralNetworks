@@ -236,6 +236,8 @@ class FFnet:
         for [x, y] in samples:
             output = nn.forward(x)
             error = subtract(y, output)
+            # print "input: {}, desired: {}, output:{}".format(x, y, \
+            #     [round(val, 3) for val in output])
             SSE += inner(error, error)/len(output)
             wrong += countWrong(error, 0.5)
         MSE = SSE/len(samples)
@@ -392,7 +394,7 @@ def main():
     # sine()
     # cancer()
     # iff()
-    autoencoder()
-    # wine()
+    # autoencoder()
+    wine()
     
 main()
