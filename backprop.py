@@ -11,6 +11,7 @@
 import math
 import random
 from random import shuffle
+import copy
 
 import hw3data
 xorSamples = hw3data.xorSamples
@@ -65,6 +66,15 @@ class FFnet:
 
         nn.act = dummy + [[0 for i in range(layer)] 
                              for layer in size1]
+
+
+        # implementation for momentum
+        nn.momentumW = dummy + [[[0 for synapse in range(size[layer-1])]
+                                              for neuron in range(size[layer])] 
+                                              for layer in nn.range1]
+
+        nn.momentumB = dummy+[[0 for neuron in range(layer)] 
+                                         for layer in size1]
 
     def describe(nn, noisy):
         """ describe prints a description of this network. """
@@ -131,7 +141,7 @@ class FFnet:
                           *nn.sensitivity[layer+1][postNeuron]
                 nn.sensitivity[layer][preNeuron] = sum*factor
 
-    def update(nn):
+    def update(nn, alpha=0):
         """ update updates all weights and biases based on the       """
         """ sensitivity values learning rate, and inputs to          """
         """ this layer, which are the outputs of the previous layer. """
@@ -140,9 +150,15 @@ class FFnet:
             for neuron in range(nn.size[layer]):
                 factor = nn.rate[layer]*nn.sensitivity[layer][neuron]
                 nn.bias[layer][neuron] += factor
+                # deltaB = factor + alpha * momentumB[layer][neuron]
+                # nn.bias[layer][neuron] += deltaB
+                # momentumB[layer][neuron] = deltaB
                 for synapse in range(nn.size[layer-1]):
                     nn.weight[layer][neuron][synapse] \
                         += factor*nn.output[layer-1][synapse]
+                    # deltaW = factor*nn.output[layer-1][synapse] + alpha * momentumW[layer-1][synapse]
+                    # nn.weight[layer][neuron][synapse] += deltaW 
+                    # momentumW[layer-1][synapse] = deltaW
 
     def learn(nn, input, desired):
         """ learn learns by forward propagating input,  """
@@ -364,7 +380,7 @@ def wine():
     wineTestSamples = wineSamples[len(wineSamples) * 2 / 3:]
     nnet = FFnet("wine", [13,15,15,15,3], [logsig, logsig, logsig, logsig], [0.5, 0.5, 0.5, 0.2])
     nnet.describe(False)
-    nnet.train(wineTrainingSamples, 10000, 1, False)
+    nnet.train(wineTrainingSamples, 10000, 10, False)
     nnet.assessAll(wineTestSamples)
 
 def main():
@@ -376,7 +392,7 @@ def main():
     # sine()
     # cancer()
     # iff()
-    # autoencoder()
-    wine()
+    autoencoder()
+    # wine()
     
 main()
