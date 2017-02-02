@@ -141,7 +141,7 @@ class FFnet:
                           *nn.sensitivity[layer+1][postNeuron]
                 nn.sensitivity[layer][preNeuron] = sum*factor
 
-    def update(nn, alpha=0):
+    def update(nn, alpha):
         """ update updates all weights and biases based on the       """
         """ sensitivity values learning rate, and inputs to          """
         """ this layer, which are the outputs of the previous layer. """
@@ -149,25 +149,25 @@ class FFnet:
         for layer in nn.range1:
             for neuron in range(nn.size[layer]):
                 factor = nn.rate[layer]*nn.sensitivity[layer][neuron]
-                nn.bias[layer][neuron] += factor
-                # deltaB = factor + alpha * momentumB[layer][neuron]
-                # nn.bias[layer][neuron] += deltaB
-                # momentumB[layer][neuron] = deltaB
+                # nn.bias[layer][neuron] += factor
+                deltaB = factor + alpha * nn.momentumB[layer][neuron]
+                nn.bias[layer][neuron] += deltaB
+                nn.momentumB[layer][neuron] = deltaB
                 for synapse in range(nn.size[layer-1]):
-                    nn.weight[layer][neuron][synapse] \
-                        += factor*nn.output[layer-1][synapse]
-                    # deltaW = factor*nn.output[layer-1][synapse] + alpha * momentumW[layer-1][synapse]
-                    # nn.weight[layer][neuron][synapse] += deltaW 
-                    # momentumW[layer-1][synapse] = deltaW
+                    # nn.weight[layer][neuron][synapse] \
+                    #     += factor*nn.output[layer-1][synapse]
+                    deltaW = factor*nn.output[layer-1][synapse] + alpha * nn.momentumW[layer][neuron][synapse]
+                    nn.weight[layer][neuron][synapse] += deltaW 
+                    nn.momentumW[layer][neuron][synapse] = deltaW
 
-    def learn(nn, input, desired):
+    def learn(nn, input, desired, alpha):
         """ learn learns by forward propagating input,  """
         """ back propagating error, then updating.      """
         """ It returns the output vector and the error. """
 
         nn.forward(input)
         nn.backward(desired)
-        nn.update()
+        nn.update(alpha)
         output = nn.output[-1]
         error = subtract(desired, output)
         return [output, error]
@@ -189,7 +189,7 @@ class FFnet:
                   "wrong =", wrong
         return wrong
     
-    def train(nn, samples, epochs, displayInterval, noisy):
+    def train(nn, samples, epochs, displayInterval, noisy, alpha=0):
         """ Trainsthe network using the specified set of samples,    """
         """ for the specified number of epochs.                      """
         """ displayInterval indicates how often to display progress. """
@@ -202,7 +202,7 @@ class FFnet:
             SSE = 0
             wrong = 0
             for [x, y] in samples:
-                [output, error] = nn.learn(x, y)
+                [output, error] = nn.learn(x, y, alpha)
                 SSE += inner(error, error)/len(output)
                 wrong += countWrong(error, 0.5)
             MSE = SSE/len(samples)
@@ -372,7 +372,7 @@ def autoencoder():
 
     nnet = FFnet("autoencoder", [16,4,16], [logsig, logsig], [0.5, 0.2])
     nnet.describe(False)
-    nnet.train(AEsamples, 10000, 100, False)
+    nnet.train(AEsamples, 10000, 100, False, alpha = 0.3)
 
 def wine():
     import wine
@@ -394,7 +394,7 @@ def main():
     # sine()
     # cancer()
     # iff()
-    # autoencoder()
-    wine()
+    autoencoder()
+    # wine()
     
 main()
