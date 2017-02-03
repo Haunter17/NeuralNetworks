@@ -20,6 +20,7 @@ sineSamples = hw3data.sineSamples
 toBinarySamples = hw3data.toBinarySamples
 letterSamples = hw3data.letterSamples
 cancerTrainingSamples = hw3data.cancerTrainingSamples
+cancerTestSamples = hw3data.cancerTestSamples
 
 
 class FFnet:
@@ -75,6 +76,13 @@ class FFnet:
 
         nn.momentumB = dummy+[[0 for neuron in range(layer)] 
                                          for layer in size1]
+
+        # implementation for VLR
+        nn.prevW = copy.deepcopy(nn.weight)
+        nn.prevB = copy.deepcopy(nn.bias)
+        nn.prevSens = copy.deepcopy(nn.sensitivity)
+        nn.prevAct = copy.deepcopy(nn.act)
+        nn.prevOut = copy.deepcopy(nn.output)
 
     def describe(nn, noisy):
         """ describe prints a description of this network. """
@@ -189,7 +197,8 @@ class FFnet:
                   "wrong =", wrong
         return wrong
     
-    def train(nn, samples, epochs, displayInterval, noisy, alpha=0):
+    def train(nn, samples, epochs, displayInterval, noisy, \
+        alpha=0, VLR=False, max_perf_inc=1.04, lr_dec=0.7, lr_inc=1.05):
         """ Trainsthe network using the specified set of samples,    """
         """ for the specified number of epochs.                      """
         """ displayInterval indicates how often to display progress. """
@@ -209,8 +218,32 @@ class FFnet:
             wrongpc = 100.0*wrong/(len(samples)*len(output))
             if wrong == 0:
                 break   # stop if classification is correct
+            # implementation of VLR
+            direction = "decreasing" if MSE < previousMSE else "increasing"
+            if VLR:
+                if MSE >= max_perf_inc * previousMSE:
+                    # discard weights and biases
+                    nn.weight = copy.deepcopy(nn.prevW)
+                    nn.bias = copy.deepcopy(nn.prevB)
+                    nn.sensitivity = copy.deepcopy(nn.prevSens)
+                    nn.act = copy.deepcopy(nn.prevAct)
+                    nn.output = copy.deepcopy(nn.prevOut)
+                    # decrement rates
+                    for index in range(1, len(nn.rate)):
+                        nn.rate[index] *= lr_dec
+                else:
+                    # keep new weights and biases
+                    nn.prevW = copy.deepcopy(nn.weight)
+                    nn.prevB = copy.deepcopy(nn.bias)
+                    nn.prevSens = copy.deepcopy(nn.sensitivity)
+                    nn.prevAct = copy.deepcopy(nn.act)
+                    nn.prevOut = copy.deepcopy(nn.output)
+                    if direction == "decreasing":
+                        # increment rates
+                        for index in range(1, len(nn.rate)):
+                            nn.rate[index] *= lr_inc
+                
             if epoch%displayInterval == 0:
-                direction = "decreasing" if MSE < previousMSE else "increasing"
                 print nn.name, "epoch", epoch, "MSE =", round(MSE, 3), "wrong =", \
                     str(wrong) + " (" + str(round(wrongpc, 3)) + "%)", direction
             previousMSE = MSE
@@ -341,7 +374,7 @@ def sine():
 def cancer():
     nnet = FFnet("cancer", [9, 5, 1], [logsig, logsig], [0.5, 0.2])
     nnet.describe(False)
-    nnet.train(cancerTrainingSamples, 2000, 100, False)
+    nnet.train(cancerTrainingSamples, 2000, 100, False, VLR=False)
     nnet.assessAll(cancerTestSamples)
 
 def iff():
@@ -392,9 +425,9 @@ def main():
     # letters()
     # toBinary()
     # sine()
-    # cancer()
+    cancer()
     # iff()
-    autoencoder()
+    # autoencoder()
     # wine()
     
 main()
