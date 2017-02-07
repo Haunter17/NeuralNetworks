@@ -379,7 +379,7 @@ def cancer():
 
 def iff():
     iffSamples = [[[0, 0], [1]], [[0, 1], [0]], [[1, 0], [0]], [[1, 1], [1]]]
-    nnet = FFnet("iff", [2,3,1], [logsig, logsig], [0.5, 0.45])
+    nnet = FFnet("iff", [2,2,1], [logsig, logsig], [0.5, 0.45])
     nnet.describe(False)
     nnet.train(iffSamples, 10000, 100, False)
 
@@ -425,8 +425,8 @@ def main():
     # letters()
     # toBinary()
     # sine()
-    cancer()
-    # iff()
+    # cancer()
+    iff()
     # autoencoder()
     # wine()
     
