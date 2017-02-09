@@ -15,10 +15,12 @@ def initW(row, col):
 X = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1],\
 [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], \
 [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], \
+[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], \
 [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]]
-y = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0], \
-[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0], \
-[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0], \
+y = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], \
+[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], \
+[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], \
+[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], \
 [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 
 X = parseIO(X)
@@ -27,7 +29,7 @@ inputDim = X.shape[0]
 numSample = X.shape[1]
 outputDim = y.shape[0]
 hiddenDim = outputDim
-print outputDim
+
 X = np.hstack((X, np.matrix([[0] for i in range(inputDim)])))
 W = initW(hiddenDim, inputDim + hiddenDim)
 
@@ -36,7 +38,7 @@ def forwardFeed(W, Z, t):
     Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
     return Z[inputDim: , t]
 
-def train(X, y, rate=0.3, max_iter=400, threshold=1.0, displayInterval=50, noisy=False):
+def train(X, y, rate=0.15, max_iter=300, threshold=1.0, displayInterval=50, noisy=False):
     epoch = 0
     global W
     for epoch in range(max_iter):
@@ -85,8 +87,10 @@ def assess(W, X, y):
     Z = np.vstack((X, H))
     for t in range(1, numSample + 1):
         Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
+        # print "predicted: {}; expected: {}".format(np.argmax(Z[inputDim:, t]), np.argmax(y[:, t - 1]))
     return Z[inputDim:, -1]
 
 Wopt = train(X, y)
-print assess(Wopt, X, y)
-print y
+
+print assess(W, X, y)
+print y[:, -1]
