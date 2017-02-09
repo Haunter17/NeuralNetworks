@@ -71,6 +71,7 @@ def train(X, y, rate=0.5, max_iter=2500, threshold=0.1, displayInterval=100, noi
 def assess(W, X, y):
     H = np.matrix([[0. for col in range(numSample + 1)] for row in range(hiddenDim)])
     Z = np.vstack((X, H))
+    print '---------testing----------'
     for t in range(1, numSample + 1):
         Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
         print "predicted: {}; expected: {}".format(np.argmax(Z[inputDim:, t]), np.argmax(y[:, t - 1]))
