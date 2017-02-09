@@ -96,6 +96,6 @@ majoritySamples = [[[0, 0, 0], 0], [[0, 0, 1], 0], [[0, 1, 0], 0], \
 # weights = train(nandSamples, 100, verbose=True, norm=True)[2]
 # test(nandSamples, weights, verbose=False)
 
-weights = train(cancer.cancertrainingSamples, 100, verbose=True, norm=True)[2]
+weights = train(cancer.cancertrainingSamples, 250, verbose=True, norm=False)[2]
 # test(cancer.cancertrainingSamples, weights, verbose=False, norm=False)
-test(cancer.cancertestSamples, weights, verbose=False, norm=True)
+# test(cancer.cancertestSamples, weights, verbose=False, norm=True)

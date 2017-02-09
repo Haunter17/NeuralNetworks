@@ -12,24 +12,31 @@ def initW(row, col):
     return np.matrix(np.random.rand(row, col))
 
 # config
-X = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]]
-y = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+X = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1],\
+[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], \
+[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], \
+[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]]
+y = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0], \
+[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0], \
+[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0], \
+[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 
 X = parseIO(X)
 y = parseIO(y)
 inputDim = X.shape[0]
 numSample = X.shape[1]
-outputDim = y.shape[1]
+outputDim = y.shape[0]
 hiddenDim = outputDim
+print outputDim
 X = np.hstack((X, np.matrix([[0] for i in range(inputDim)])))
 W = initW(hiddenDim, inputDim + hiddenDim)
 
-def forwardFeed(Z, t):
+def forwardFeed(W, Z, t):
     # Z supposed to be updated
     Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
     return Z[inputDim: , t]
 
-def train(X, y, rate=0.4, max_iter=100, threshold=1.0, displayInterval=5, noisy=False):
+def train(X, y, rate=0.3, max_iter=400, threshold=1.0, displayInterval=50, noisy=False):
     epoch = 0
     global W
     for epoch in range(max_iter):
@@ -45,7 +52,7 @@ def train(X, y, rate=0.4, max_iter=100, threshold=1.0, displayInterval=5, noisy=
         for k in range(hiddenDim)] for t in range(numSample + 1)]
         
         for t in range(1, numSample + 1):
-            pred = forwardFeed(Z, t)
+            pred = forwardFeed(W, Z, t)
             e = y[:, t - 1] - pred
             MSE += 0.5 * ((e.transpose() * e)).item(0)
             # calculate p and gradW for sample T
@@ -66,9 +73,20 @@ def train(X, y, rate=0.4, max_iter=100, threshold=1.0, displayInterval=5, noisy=
             for i in range(hiddenDim):
                 for j in range(inputDim + hiddenDim):
                     gradW[i][j] = gradWT[t][i][j]
+        MSE /= numSample
         if epoch % displayInterval == 0:
             print "MSE for epoch {}: {}".format(epoch, MSE)
         gradW = np.matrix(gradW)
         W = W + rate * gradW
+    return W
 
-train(X, y)
+def assess(W, X, y):
+    H = np.matrix([[0. for col in range(numSample + 1)] for row in range(hiddenDim)])
+    Z = np.vstack((X, H))
+    for t in range(1, numSample + 1):
+        Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
+    return Z[inputDim:, -1]
+
+Wopt = train(X, y)
+print assess(Wopt, X, y)
+print y

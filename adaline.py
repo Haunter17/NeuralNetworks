@@ -136,21 +136,21 @@ widrowHoffTrain = [[[1,1,1,0,0,1,0,0,0,1,0,0,0,1,0,0], 60], [[1,1,1,0,1,0,0,0,1,
 widrowHoffTest = [[[0,1,1,1,0,0,1,0,0,0,1,0,0,0,1,0], 60], [[0,1,1,1,0,1,0,0,0,1,1,1,0,1,1,1], 0], \
 [[0,1,1,1,0,1,1,0,0,1,0,0,0,1,0,0], -60]]
 
-hvTest = [[[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0], -10], [[0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0], -10], \
-[[0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0], -10], [[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1], -10], \
-[[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], 10],[[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0], 10], \
-[[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0], 10], [[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1], 10]]
-import random
-random.shuffle(hvTest)
-hvTrain = hvTest[:-1]
+hvTest = [[[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0], 0], [[0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0], 0], \
+[[0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0], 0], [[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1], 0], \
+[[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], 1],[[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0], 1], \
+[[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0], 1], [[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1], 1]]
+# import random
+# random.shuffle(hvTest)
+hvTrain = hvTest[:2] + hvTest[3:4] + hvTest[4:6] + hvTest[7:]
 # weights = train(iffSamples, 500, verbose=True, norm=False, rate=0.001)
-# weights = train(cancer.cancertrainingSamples, 173, verbose=False, norm=False, rate=0.01)[2]
-# test(cancer.cancertrainingSamples, weights, verbose=False, norm=False)
-# test(cancer.cancertestSamples, weights, verbose=False, norm=False)
+# weights = train(cancer.cancertrainingSamples, 200, verbose=False, norm=False, rate=0.01)[2]
+# print test(cancer.cancertrainingSamples, weights, verbose=False, norm=False)
+# print test(cancer.cancertestSamples, weights, verbose=False, norm=False)
 
-# weights = train(widrowHoffTrain + widrowHoffTest, 200, verbose=True, freq=50, norm=False, \
-#     rate=0.03, regression=True, epsilon=1.0)[2]
-# test(widrowHoffTrain + widrowHoffTest, weights, verbose=True, norm=False, regression=True)
+weights = train(widrowHoffTrain + widrowHoffTest, 200, verbose=True, freq=50, norm=False, \
+    rate=0.03, regression=True, epsilon=1.0)[2]
+test(widrowHoffTrain + widrowHoffTest, weights, verbose=True, norm=False, regression=True)
 
-weights = train(hvTrain, 3000, verbose=False, freq=1000, norm=False, rate=0.002, regression=True, epsilon=1)[2]
-test(hvTest, weights, verbose=True, norm=False, regression=True)
+# weights = train(hvTrain, 3000, verbose=False, freq=1000, norm=False, rate=0.002, regression=True, epsilon=0.05)[2]
+# test(hvTest, weights, verbose=True, norm=False, regression=True)
