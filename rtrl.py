@@ -60,6 +60,12 @@ inputDim, numSample, outputDim, hiddenDim = 0, 0, 0, 0
 W = []
 
 
+def roundall(item, n):
+    """ Round a list, list of lists, etc. to n decimal places. """
+    if type(item) is list:
+        return map(lambda x:roundall(x, n), item)
+    return round(item, n)
+
 def forwardFeed(W, Z, t, neuronType):
     # Z supposed to be updated
     Z[inputDim:, t] = neuronType.fun(W * Z[:, t - 1])
@@ -70,6 +76,8 @@ def train(X, y, neuronType, rate=1.0, max_iter=25000, threshold=0.05, \
     epoch = 0
     global W
     for epoch in range(max_iter):
+        if epoch % displayInterval == 0:
+            print "Epoch {}".format(epoch)
         H = np.matrix([[0. for col in range(numSample + 1)] for row in range(hiddenDim)])
         Z = np.vstack((X, H))
         MSE = 0
@@ -79,8 +87,15 @@ def train(X, y, neuronType, rate=1.0, max_iter=25000, threshold=0.05, \
         
         for t in range(1, numSample + 1):
             pred = forwardFeed(W, Z, t, neuronType)
-            e = y[:, t - 1] - pred
-            MSE += 0.5 * ((e.transpose() * e)).item(0)  
+            desired = y[:, t - 1]
+            e = desired - pred
+            slotMSE = 0.5 * ((e.transpose() * e)).item(0)
+            MSE += slotMSE
+            if epoch % displayInterval == 0:
+                print "slot {} click {} desired {} predicted {} \
+                MSE {}".format(t - 1, X.item(t - 1), \
+                    [round(p) for p in np.asarray(desired.transpose())[0]], \
+                    [round(p) for p in np.asarray(pred.transpose())[0]], round(slotMSE, 3))
             # calculate p and gradW for sample T
             for i in range(hiddenDim):
                 for j in range(inputDim + hiddenDim):
@@ -129,8 +144,9 @@ def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, neuronType=logsig)
     Wopt = train(X, y, neuronType, rate=rate, max_iter=runLength)
     assess(Wopt, X, y, neuronType)
 
-pattern = [[0,4],[2,5,6], [0, 2, 4, 6]]
+# pattern = [[0,4],[2,5,6], [0, 2, 4, 6]]
+pattern = [[7], [0,1,2,3,4,5,6,8,9,10,11,12,13,14], [4, 12], [0, 8, 10]]
 def main():
-    drumMachine(pattern, 8, runLength=10000, rate=1.0)
+    drumMachine(pattern, 16, runLength=1000, rate=1.0)
 
 main()
