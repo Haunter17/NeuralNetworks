@@ -13,7 +13,7 @@ def initW(row, col):
 
 def genBeats(pattern, numSlots):
     numTrack = len(pattern)
-    X = [[0 for x in range(2 ** numTrack)] for beat in range(numSlots)]
+    X = [0 for beat in range(numSlots)]
     y = [[0 for x in range(2 ** numTrack)] for beat in range(numSlots)]
     for beat in range(numSlots):
         beatIndex = 0
@@ -24,15 +24,10 @@ def genBeats(pattern, numSlots):
                 beatIndex += 2 ** trackIndex
                 # print "beat index incremented to {}".format(beatIndex)
         y[beat][beatIndex] = 1
-    X[0][-1] = 1
+    X[0] = 1
     return X, y
 
-# print genBeats(4, [[1, 2], [0, 1]])[1]
-
-# config
-
-# X = [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-# y = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0]]
+# global config
 X = []
 y = []
 inputDim, numSample, outputDim, hiddenDim = 0, 0, 0, 0
@@ -44,7 +39,7 @@ def forwardFeed(W, Z, t):
     Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
     return Z[inputDim: , t]
 
-def train(X, y, rate=1.0, max_iter=25000, threshold=0.09, displayInterval=100, noisy=False):
+def train(X, y, rate=1.0, max_iter=25000, threshold=0.05, displayInterval=100, noisy=False):
     epoch = 0
     global W
     for epoch in range(max_iter):
@@ -96,21 +91,20 @@ def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, actFun=sigmoid):
     global X, y, inputDim, numSample, outputDim, hiddenDim, W
     # parsing data and setting config
     X, y = genBeats(pattern, numSlots)
-    X = parseIO(X)
+    X = parseIO(X).transpose()
     y = parseIO(y)
     inputDim = X.shape[0]
-    numSample = X.shape[1]
+    numSample = numSlots
     outputDim = y.shape[0]
     hiddenDim = outputDim
     X = np.hstack((X, np.matrix([[0] for i in range(inputDim)])))
     W = initW(hiddenDim, inputDim + hiddenDim)
+    # print W.shape
     Wopt = train(X, y, rate=rate, max_iter=runLength)
     assess(Wopt, X, y)
 
-pattern = [[0, 4], [1, 3]]
+pattern = [[0,4],[2,5,6], [0, 2, 4, 6]]
 def main():
-    drumMachine(pattern, 8, runLength=25000, rate=0.8)
+    drumMachine(pattern, 8, runLength=5000, rate=1.0)
 
 main()
-# Wopt = train(X, y)
-# assess(W, X, y)
