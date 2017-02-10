@@ -11,32 +11,46 @@ def sigmoid(x):
 def initW(row, col):
     return np.matrix(np.random.rand(row, col))
 
+def genBeats(pattern, numSlots):
+    numTrack = len(pattern)
+    X = [[0 for x in range(2 ** numTrack)] for beat in range(numSlots)]
+    y = [[0 for x in range(2 ** numTrack)] for beat in range(numSlots)]
+    for beat in range(numSlots):
+        beatIndex = 0
+        for trackIndex in range(numTrack):
+            track = pattern[trackIndex]
+            if beat in track:
+                # print "beat {} in track {}".format(beat, trackIndex)
+                beatIndex += 2 ** trackIndex
+                # print "beat index incremented to {}".format(beatIndex)
+        y[beat][beatIndex] = 1
+    X[0][-1] = 1
+    return X, y
+
+# print genBeats(4, [[1, 2], [0, 1]])[1]
+
 # config
-X = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]]
-y = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 
-X = parseIO(X)
-y = parseIO(y)
-inputDim = X.shape[0]
-numSample = X.shape[1]
-outputDim = y.shape[0]
-hiddenDim = outputDim
+# X = [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+# y = [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0]]
+X = []
+y = []
+inputDim, numSample, outputDim, hiddenDim = 0, 0, 0, 0
+W = []
 
-X = np.hstack((X, np.matrix([[0] for i in range(inputDim)])))
-W = initW(hiddenDim, inputDim + hiddenDim)
 
 def forwardFeed(W, Z, t):
     # Z supposed to be updated
     Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
     return Z[inputDim: , t]
 
-def train(X, y, rate=0.5, max_iter=2500, threshold=0.1, displayInterval=100, noisy=False):
+def train(X, y, rate=1.0, max_iter=25000, threshold=0.09, displayInterval=100, noisy=False):
     epoch = 0
     global W
     for epoch in range(max_iter):
         H = np.matrix([[0. for col in range(numSample + 1)] for row in range(hiddenDim)])
         Z = np.vstack((X, H))
-        SqE = 0
+        MSE = 0
         pTL = [[[[0. for col in range(inputDim + hiddenDim)] \
         for row in range(hiddenDim)] \
         for k in range(hiddenDim)] for t in range(numSample + 1)]
@@ -44,7 +58,7 @@ def train(X, y, rate=0.5, max_iter=2500, threshold=0.1, displayInterval=100, noi
         for t in range(1, numSample + 1):
             pred = forwardFeed(W, Z, t)
             e = y[:, t - 1] - pred
-            SqE += 0.5 * ((e.transpose() * e)).item(0)  
+            MSE += 0.5 * ((e.transpose() * e)).item(0)  
             # calculate p and gradW for sample T
             for i in range(hiddenDim):
                 for j in range(inputDim + hiddenDim):
@@ -59,13 +73,14 @@ def train(X, y, rate=0.5, max_iter=2500, threshold=0.1, displayInterval=100, noi
                         * accumL
                         accumK += e.item(k) * pTL[t][k][i][j]
                     W[i, j] += rate * accumK
-        if SqE <= threshold:
-            print "Epoch {}, Final Squared Error: {}".format(epoch, SqE)
+        MSE /= numSample
+        if MSE <= threshold:
+            print "Epoch {}, Final MSE: {}".format(epoch, MSE)
             return W
         if epoch % displayInterval == 0:
-            print "Error for epoch {}: {}".format(epoch, SqE)
+            print "MSE for epoch {}: {}".format(epoch, MSE)
 
-    print "Epoch {}, Final Squared Error: {}".format(epoch, SqE)
+    print "Epoch {}, Final Squared MSE: {}".format(epoch, MSE)
     return W
 
 def assess(W, X, y):
@@ -77,5 +92,25 @@ def assess(W, X, y):
         print "predicted: {}; expected: {}".format(np.argmax(Z[inputDim:, t]), np.argmax(y[:, t - 1]))
     return Z[inputDim:, -1]
 
-Wopt = train(X, y)
-assess(W, X, y)
+def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, actFun=sigmoid):
+    global X, y, inputDim, numSample, outputDim, hiddenDim, W
+    # parsing data and setting config
+    X, y = genBeats(pattern, numSlots)
+    X = parseIO(X)
+    y = parseIO(y)
+    inputDim = X.shape[0]
+    numSample = X.shape[1]
+    outputDim = y.shape[0]
+    hiddenDim = outputDim
+    X = np.hstack((X, np.matrix([[0] for i in range(inputDim)])))
+    W = initW(hiddenDim, inputDim + hiddenDim)
+    Wopt = train(X, y, rate=rate, max_iter=runLength)
+    assess(Wopt, X, y)
+
+pattern = [[0, 4], [1, 3]]
+def main():
+    drumMachine(pattern, 8, runLength=25000, rate=0.8)
+
+main()
+# Wopt = train(X, y)
+# assess(W, X, y)
