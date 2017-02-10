@@ -22,7 +22,7 @@ class ActivationFunction:
         return af.deriv(x, y)
 logsig = ActivationFunction("logsig",
                             lambda x: 1.0/(1.0 + np.exp(-x)),
-                            lambda x,y: y*(1.0-y))
+                            lambda x,y: y - y * y)
 
 tansig = ActivationFunction("tansig",
                             lambda x: np.tanh(x),
@@ -35,9 +35,6 @@ purelin = ActivationFunction("purelin",
 def parseIO(X):
     X = np.matrix(X).transpose()
     return X
-
-def sigmoid(x):
-    return 1.0 / (1 + np.exp(-x))
 
 def initW(row, col):
     return np.matrix(np.random.rand(row, col))
