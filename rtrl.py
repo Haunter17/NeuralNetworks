@@ -1,6 +1,37 @@
 #RTRL Learning by Zhepei Wang
 import numpy as np
 import copy
+
+# the activation function is borrowed from Prof. Keller's backprop.py
+class ActivationFunction:
+    """ ActivationFunction packages a function together with its derivative. """
+    """ This prevents getting the wrong derivative for a given function.     """
+    """ Because some derivatives are computable from the function's value,   """
+    """ the derivative has two arguments: one for the argument and one for   """
+    """ the value of the corresponding function. Typically only one is use.  """
+
+    def __init__(af, name, fun, deriv):
+        af.name = name
+        af.fun = fun
+        af.deriv = deriv
+
+    def fun(af, x):
+        return af.fun(x)
+
+    def deriv(af, x, y):
+        return af.deriv(x, y)
+logsig = ActivationFunction("logsig",
+                            lambda x: 1.0/(1.0 + np.exp(-x)),
+                            lambda x,y: y*(1.0-y))
+
+tansig = ActivationFunction("tansig",
+                            lambda x: np.tanh(x),
+                            lambda x,y: 1.0 - y*y)
+
+purelin = ActivationFunction("purelin",
+                             lambda x: x,
+                             lambda x,y: 1)
+
 def parseIO(X):
     X = np.matrix(X).transpose()
     return X
@@ -20,9 +51,7 @@ def genBeats(pattern, numSlots):
         for trackIndex in range(numTrack):
             track = pattern[trackIndex]
             if beat in track:
-                # print "beat {} in track {}".format(beat, trackIndex)
                 beatIndex += 2 ** trackIndex
-                # print "beat index incremented to {}".format(beatIndex)
         y[beat][beatIndex] = 1
     X[0] = 1
     return X, y
@@ -34,12 +63,13 @@ inputDim, numSample, outputDim, hiddenDim = 0, 0, 0, 0
 W = []
 
 
-def forwardFeed(W, Z, t):
+def forwardFeed(W, Z, t, neuronType):
     # Z supposed to be updated
-    Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
+    Z[inputDim:, t] = neuronType.fun(W * Z[:, t - 1])
     return Z[inputDim: , t]
 
-def train(X, y, rate=1.0, max_iter=25000, threshold=0.05, displayInterval=100, noisy=False):
+def train(X, y, neuronType, rate=1.0, max_iter=25000, threshold=0.05, \
+    displayInterval=100, noisy=False):
     epoch = 0
     global W
     for epoch in range(max_iter):
@@ -51,7 +81,7 @@ def train(X, y, rate=1.0, max_iter=25000, threshold=0.05, displayInterval=100, n
         for k in range(hiddenDim)] for t in range(numSample + 1)]
         
         for t in range(1, numSample + 1):
-            pred = forwardFeed(W, Z, t)
+            pred = forwardFeed(W, Z, t, neuronType)
             e = y[:, t - 1] - pred
             MSE += 0.5 * ((e.transpose() * e)).item(0)  
             # calculate p and gradW for sample T
@@ -64,8 +94,7 @@ def train(X, y, rate=1.0, max_iter=25000, threshold=0.05, displayInterval=100, n
                             accumL += W.item(k, inputDim + l) * pTL[t - 1][l][i][j]
                         if i == k:
                             accumL += Z.item(j, t - 1)
-                        pTL[t][k][i][j] = Z.item(inputDim + k, t) * (1. - Z.item(inputDim + k, t)) \
-                        * accumL
+                        pTL[t][k][i][j] = neuronType.deriv(None, Z.item(inputDim + k, t)) * accumL
                         accumK += e.item(k) * pTL[t][k][i][j]
                     W[i, j] += rate * accumK
         MSE /= numSample
@@ -78,16 +107,16 @@ def train(X, y, rate=1.0, max_iter=25000, threshold=0.05, displayInterval=100, n
     print "Epoch {}, Final Squared MSE: {}".format(epoch, MSE)
     return W
 
-def assess(W, X, y):
+def assess(W, X, y, neuronType):
     H = np.matrix([[0. for col in range(numSample + 1)] for row in range(hiddenDim)])
     Z = np.vstack((X, H))
     print '---------testing----------'
     for t in range(1, numSample + 1):
-        Z[inputDim:, t] = sigmoid(W * Z[:, t - 1])
+        Z[inputDim:, t] = neuronType.fun(W * Z[:, t - 1])
         print "predicted: {}; expected: {}".format(np.argmax(Z[inputDim:, t]), np.argmax(y[:, t - 1]))
     return Z[inputDim:, -1]
 
-def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, actFun=sigmoid):
+def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, neuronType=logsig):
     global X, y, inputDim, numSample, outputDim, hiddenDim, W
     # parsing data and setting config
     X, y = genBeats(pattern, numSlots)
@@ -100,11 +129,11 @@ def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, actFun=sigmoid):
     X = np.hstack((X, np.matrix([[0] for i in range(inputDim)])))
     W = initW(hiddenDim, inputDim + hiddenDim)
     # print W.shape
-    Wopt = train(X, y, rate=rate, max_iter=runLength)
-    assess(Wopt, X, y)
+    Wopt = train(X, y, neuronType, rate=rate, max_iter=runLength)
+    assess(Wopt, X, y, neuronType)
 
 pattern = [[0,4],[2,5,6], [0, 2, 4, 6]]
 def main():
-    drumMachine(pattern, 8, runLength=5000, rate=1.0)
+    drumMachine(pattern, 8, runLength=10000, rate=1.0)
 
 main()
