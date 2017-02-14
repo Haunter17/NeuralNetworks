@@ -37,9 +37,17 @@ def parseIO(X):
     return X
 
 def initW(row, col):
+    '''randomly initialize the weight matrix W'''
     return np.matrix(np.random.rand(row, col))
 
 def genBeats(pattern, numSlots):
+    '''
+    Function to encode the pattern
+    For each slot, there are 2^numTrack possible outputs
+    Hence, we encode the output as an array in which each element
+    is a vector of 2^n bits with exactly one entry to be 1
+    while all other entries are 0's.
+    '''
     numTrack = len(pattern)
     X = [0 for beat in range(numSlots)]
     y = [[0 for x in range(2 ** numTrack)] for beat in range(numSlots)]
@@ -54,6 +62,11 @@ def genBeats(pattern, numSlots):
     return X, y
 
 def decomposePower2(x):
+    '''
+    To backtrack which track is on at a certain beat,
+    we use the property that every natural number is
+    uniquely represented by powers of 2 with no duplicates
+    '''
     powers = []
     i = 1
     while i <= x:
@@ -69,13 +82,11 @@ inputDim, numSample, outputDim, hiddenDim = 0, 0, 0, 0
 W = []
 
 
-def roundall(item, n):
-    """ Round a list, list of lists, etc. to n decimal places. """
-    if type(item) is list:
-        return map(lambda x:roundall(x, n), item)
-    return round(item, n)
-
 def forwardFeed(W, Z, t, neuronType):
+    '''
+    Forward feed with weight W and input/hidden neurons Z
+    at specific time t
+    '''
     # Z supposed to be updated
     Z[inputDim:, t] = neuronType.fun(W * Z[:, t - 1])
     return Z[inputDim: , t]
@@ -138,6 +149,10 @@ def train(X, y, neuronType, rate=1.0, max_iter=25000, threshold=0.05, \
     return W
 
 def assess(W, X, y, neuronType):
+    '''
+    Test the performance of a trained weight matrix W
+    on X and y
+    '''
     H = np.matrix([[0. for col in range(numSample + 1)] for row in range(hiddenDim)])
     Z = np.vstack((X, H))
     numTrack = int(np.log2(outputDim))
@@ -184,7 +199,6 @@ pattern = [[0,4],[2,5,6], [0, 2, 4, 6]]
 # pattern = [[7], [0,1,2,3,4,5,6,8,9,10,11,12,13,14], [4, 12], [0, 8, 10]]
 
 def main():
-    drumMachine(pattern, 8, runLength=10000, rate=0.8)
-    # print decomposePower2(5)
+    drumMachine(pattern, 16, runLength=2000, rate=0.8)
 
 main()
