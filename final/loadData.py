@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 # file configurations
 filePath = 'kdd_10.csv'
+portion = 1.0
+train_portion = 0.75
 # 'num_root', 'num_file_creations', 'num_shells' are with mixed types
 features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes', \
 'dst_bytes', 'land', 'wrong_fragment', 'urgent', 'hot', 'num_failed_logins', \
@@ -41,10 +43,15 @@ df['label'] = df.label.cat.codes # 11 stands for normal
 # partition data
 df = df.sample(frac = 1).reset_index(drop = True) # shuffle rows
 df['type'] = ''
-df.loc[0: int(0.75 * len(df)) - 1, 'type'] = 'train'
-df.loc[int(0.75 * len(df)): , 'type'] = 'test'
-# convert data into matrix
+df = df.loc[0:int(portion * len(df))]
+df.loc[0: int(train_portion * len(df)) - 1, 'type'] = 'train'
+df.loc[int(train_portion * len(df)): , 'type'] = 'test'
 X_train = df[df.type == 'train'][[col for col in df.columns if col not in ['label', 'type']]]
 y_train = df[df.type == 'train']['label']
 X_test = df[df.type == 'test'][[col for col in df.columns if col not in ['label', 'type']]]
 y_test = df[df.type == 'test']['label']
+# convert into array
+X_train = np.array(X_train)
+y_train = np.array(y_train)
+X_test = np.array(X_test)
+y_test = np.array(y_test)
