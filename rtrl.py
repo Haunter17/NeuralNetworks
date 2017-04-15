@@ -177,7 +177,7 @@ def assess(W, X, y, neuronType):
                 "correct" if (trackOnPred and trackOnDesired) or (not trackOnPred and not trackOnDesired) else "wrong")
     MSE /= numSample
     print "Final MSE: {}".format(round(MSE, 4))
-    return MSE
+    return Z
 
 def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, neuronType=logsig):
     global X, y, inputDim, numSample, outputDim, hiddenDim, W
@@ -193,12 +193,13 @@ def drumMachine(pattern, numSlots, runLength=25000, rate=0.5, neuronType=logsig)
     W = initW(hiddenDim, inputDim + hiddenDim)
     # print W.shape
     Wopt = train(X, y, neuronType, rate=rate, max_iter=runLength)
-    assess(Wopt, X, y, neuronType)
+    o = assess(Wopt, X, y, neuronType)
+    print o
 
-pattern = [[0,4],[2,5,6], [0, 2, 4, 6]]
+pattern = [[2,5,6], [0, 2, 4, 6]]
 # pattern = [[7], [0,1,2,3,4,5,6,8,9,10,11,12,13,14], [4, 12], [0, 8, 10]]
 
 def main():
-    drumMachine(pattern, 16, runLength=2000, rate=0.8)
+    drumMachine(pattern, 8, runLength=2000, rate=0.8)
 
 main()
