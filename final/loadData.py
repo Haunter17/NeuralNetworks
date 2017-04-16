@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 # file configurations
 filePath = 'kdd_10.csv'
-portion = 1.0
-train_portion = 0.75
+portion = 0.1
+train_portion = 0.8
 # 'num_root', 'num_file_creations', 'num_shells' are with mixed types
 features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes', \
 'dst_bytes', 'land', 'wrong_fragment', 'urgent', 'hot', 'num_failed_logins', \
