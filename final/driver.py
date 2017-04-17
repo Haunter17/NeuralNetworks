@@ -124,49 +124,60 @@ def logreg(X_train, y_train, X_test, y_test, reg = 0.2):
 		Produce logistic regression accuracy based on the training set and
 		the test set
 	'''
+	print('********************************')
 	print('Setting up model for logistic regression...')
 	model = linear_model.LogisticRegression(C= 1.0 / reg, verbose = False)
 	training(model, 'logistic regression', X_train, y_train, X_test, y_test)
 	title = 'Learning Curve (Logistic Regression, $\lambda = {}$)'.format(reg)
 	save_file_name = 'logreg'
 	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	print('********************************')
 
 def linearSVM(X_train, y_train, X_test, y_test, reg = 0.2):
 	''' 
 		Produce the linear support vector machine report based on the training set and 
 		the test set
 	'''
+	print('********************************')
 	print('Setting up model for linear support vector machine...')
 	model = svm.LinearSVC(C = 1.0 / reg, verbose = 0)
 	training(model, 'linear SVM', X_train, y_train, X_test, y_test)
 	title = 'Learning Curve (Linear SVM, $\lambda = {}$)'.format(reg)
 	save_file_name = 'linsvm'
 	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	print('********************************')
 
 def kernelSVM(X_train, y_train, X_test, y_test, reg = 0.2):
 	''' 
 		Produce the rbf-kernel support vector machine report based on the training set and 
 		the test set
 	'''
+	print('********************************')
 	print('Setting up model for rbf-kernel support vector machine...')
 	model = svm.SVC(C = 1.0 / reg, verbose = 0)
 	training(model, 'rbf-kernel SVM', X_train, y_train, X_test, y_test)
+	title = 'Learning Curve (rbf-kernel SVM, $\lambda = {}$)'.format(reg)
+	save_file_name = 'rbfsvm'
+	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	print('********************************')
 
 def MLP(X_train, y_train, X_test, y_test, reg = 0.01):
 	''' 
 		Produce the multilayer perceptron training report based on the training set and 
 		the test set
 	'''
+	print('********************************')
 	print('Setting up MLP model')
 	model = neural_network.MLPClassifier(alpha = reg, hidden_layer_sizes = (100, 100, 100,))
 	training(model, 'MLP', X_train, y_train, X_test, y_test)
 	title = 'Learning Curve (MLP, $\lambda = {}$, hidden = [100, 100, 100])'.format(reg)
 	save_file_name = 'MLP'
 	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	print('********************************')
 
 # main driver function
 if __name__ == '__main__':
-	# logreg(X_train, y_train, X_test, y_test)
-	# linearSVM(X_train, y_train, X_test, y_test)
-	# kernelSVM(X_train, y_train, X_test, y_test)
+	logreg(X_train, y_train, X_test, y_test)
+	linearSVM(X_train, y_train, X_test, y_test)
+	kernelSVM(X_train, y_train, X_test, y_test)
 	MLP(X_train, y_train, X_test, y_test)
