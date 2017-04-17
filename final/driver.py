@@ -90,12 +90,18 @@ def plot_learning_curve(model, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
-def learning_curve_wrapper(model, title, X, y, train_sizes = np.array([0.2, 0.5, 0.8, 1])):
+def learning_curve_wrapper(model, fname, title, X, y, \
+	train_sizes = np.linspace(.1, 1.0, 6), if_show = False):
 	n_samples = min(35000, len(X))
 	X = X[:n_samples, :]
 	y = y[:n_samples]
 	plot_learning_curve(model, title, X, y, train_sizes = train_sizes)
-	plt.show()
+	if if_show:
+		plt.show()
+	else:
+		plt.savefig('{}.png'.format(fname), format = 'png')
+		plt.close()
+	print('Plotting completed')
 
 def training(model, modelName, X_train, y_train, X_test, y_test):
 	'''
@@ -122,7 +128,8 @@ def logreg(X_train, y_train, X_test, y_test, reg = 0.2):
 	model = linear_model.LogisticRegression(C= 1.0 / reg, verbose = False)
 	training(model, 'logistic regression', X_train, y_train, X_test, y_test)
 	title = 'Learning Curve (Logistic Regression, $\lambda = {}$)'.format(reg)
-	# learning_curve_wrapper(model, title, X_train, y_train)
+	save_file_name = 'logreg'
+	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
 
 def linearSVM(X_train, y_train, X_test, y_test, reg = 0.2):
 	''' 
@@ -133,7 +140,8 @@ def linearSVM(X_train, y_train, X_test, y_test, reg = 0.2):
 	model = svm.LinearSVC(C = 1.0 / reg, verbose = 0)
 	training(model, 'linear SVM', X_train, y_train, X_test, y_test)
 	title = 'Learning Curve (Linear SVM, $\lambda = {}$)'.format(reg)
-	learning_curve_wrapper(model, title, X_train, y_train)
+	save_file_name = 'linsvm'
+	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
 
 def kernelSVM(X_train, y_train, X_test, y_test, reg = 0.2):
 	''' 
@@ -153,7 +161,8 @@ def MLP(X_train, y_train, X_test, y_test, reg = 0.01):
 	model = neural_network.MLPClassifier(alpha = reg, hidden_layer_sizes = (100, 100, 100,))
 	training(model, 'MLP', X_train, y_train, X_test, y_test)
 	title = 'Learning Curve (MLP, $\lambda = {}$, hidden = [100, 100, 100])'.format(reg)
-	learning_curve_wrapper(model, title, X_train, y_train)
+	save_file_name = 'MLP'
+	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
 
 # main driver function
 if __name__ == '__main__':
