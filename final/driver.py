@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 
 # module to load data
-print('Start loading data...')
+print('==> Start to load data...')
 import loadData as data
 '''
 	X_train is an m_train x n array
@@ -16,8 +16,8 @@ X_train = data.X_train
 y_train = data.y_train
 X_test = data.X_test
 y_test = data.y_test
-print('Number of trainimng samples: {0:4d}'.format(len(y_train)))
-print('Number of test samples: {0:4d}'.format(len(y_test)))
+print('-- Number of trainimng samples: {0:4d}'.format(len(y_train)))
+print('-- Number of test samples: {0:4d}'.format(len(y_test)))
 
 def plot_learning_curve(model, title, X, y, ylim=None, cv=None,
                         n_jobs=1, train_sizes=np.linspace(.1, 1.0, 5)):
@@ -68,7 +68,7 @@ def plot_learning_curve(model, title, X, y, ylim=None, cv=None,
         plt.ylim(*ylim)
     plt.xlabel("Training examples")
     plt.ylabel("Score")
-    print('Generating learning curve...')
+    print('==> Generating learning curve...')
     train_sizes, train_scores, test_scores = learning_curve(
         model, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
     train_scores_mean = np.mean(train_scores, axis=1)
@@ -101,83 +101,146 @@ def learning_curve_wrapper(model, fname, title, X, y, \
 	else:
 		plt.savefig('{}.png'.format(fname), format = 'png')
 		plt.close()
-	print('Plotting completed')
+	print('==> Plotting completed')
 
 def training(model, modelName, X_train, y_train, X_test, y_test):
 	'''
 		Produce the training and testing accuracy for a given model
 	'''
-	print('Start training the {} model...'.format(modelName))
+	print('==> Start training the {} model...'.format(modelName))
 	t_begin = time.time()
 	model.fit(X_train, y_train)
 	t_end = time.time()
 	print('================')
-	print('Time elapsed for training: {t:4.2f} seconds'.format(t = t_end - t_begin))
+	try:
+		getattr(model, 'n_iter_')
+	except AttributeError:
+		print('-- Model {} is not iterative'.format(modelName))
+	else:
+		print('-- Actual number of iterations: {}'.format(model.n_iter_))
+	print('-- Time elapsed for training: {t:4.2f} seconds'.format(t = t_end - t_begin))
 	# accuracy report
-	print('Testing the {} model...'.format(modelName))
-	print('Training accuracy: {a:4.4f}'.format(a = model.score(X_train, y_train)))
-	print('Testing accuracy: {a:4.4f}'.format(a = model.score(X_test, y_test)))
+	print('-- Testing the {} model...'.format(modelName))
+	print('-- Training accuracy: {a:4.4f}'.format(a = model.score(X_train, y_train)))
+	print('-- Testing accuracy: {a:4.4f}'.format(a = model.score(X_test, y_test)))
 	print('================')
 
-def logreg(X_train, y_train, X_test, y_test, reg = 0.2):
+def logreg(X_train, y_train, X_test, y_test, reg = 0.2, lc = False):
 	''' 
 		Produce logistic regression accuracy based on the training set and
 		the test set
 	'''
 	print('********************************')
-	print('Setting up model for logistic regression...')
+	print('==> Setting up model for logistic regression...')
 	model = linear_model.LogisticRegression(C= 1.0 / reg, verbose = False)
 	training(model, 'logistic regression', X_train, y_train, X_test, y_test)
-	title = 'Learning Curve (Logistic Regression, $\lambda = {}$)'.format(reg)
-	save_file_name = 'logreg'
-	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	if lc:
+		title = 'Learning Curve (Logistic Regression, $\lambda = {}$)'.format(reg)
+		save_file_name = 'logreg'
+		learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
 	print('********************************')
 
-def linearSVM(X_train, y_train, X_test, y_test, reg = 0.2):
+def linearSVM(X_train, y_train, X_test, y_test, reg = 0.2, lc = False):
 	''' 
 		Produce the linear support vector machine report based on the training set and 
 		the test set
 	'''
 	print('********************************')
-	print('Setting up model for linear support vector machine...')
+	print('==> Setting up model for linear support vector machine...')
 	model = svm.LinearSVC(C = 1.0 / reg, verbose = 0)
 	training(model, 'linear SVM', X_train, y_train, X_test, y_test)
-	title = 'Learning Curve (Linear SVM, $\lambda = {}$)'.format(reg)
-	save_file_name = 'linsvm'
-	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	if lc:
+		title = 'Learning Curve (Linear SVM, $\lambda = {}$)'.format(reg)
+		save_file_name = 'linsvm'
+		learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
 	print('********************************')
 
-def kernelSVM(X_train, y_train, X_test, y_test, reg = 0.2):
+def kernelSVM(X_train, y_train, X_test, y_test, reg = 0.2, lc = False):
 	''' 
 		Produce the rbf-kernel support vector machine report based on the training set and 
 		the test set
 	'''
 	print('********************************')
-	print('Setting up model for rbf-kernel support vector machine...')
+	print(' ==> Setting up model for rbf-kernel support vector machine...')
 	model = svm.SVC(C = 1.0 / reg, verbose = 0)
 	training(model, 'rbf-kernel SVM', X_train, y_train, X_test, y_test)
 	title = 'Learning Curve (rbf-kernel SVM, $\lambda = {}$)'.format(reg)
-	save_file_name = 'rbfsvm'
-	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	if lc:
+		save_file_name = 'rbfsvm'
+		learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
 	print('********************************')
 
-def MLP(X_train, y_train, X_test, y_test, reg = 0.01):
+def MLP(X_train, y_train, X_test, y_test, reg = 0.01, lc = False):
 	''' 
 		Produce the multilayer perceptron training report based on the training set and 
 		the test set
 	'''
 	print('********************************')
-	print('Setting up MLP model')
+	print('==> Setting up MLP model')
 	model = neural_network.MLPClassifier(alpha = reg, hidden_layer_sizes = (100, 100, 100,))
 	training(model, 'MLP', X_train, y_train, X_test, y_test)
-	title = 'Learning Curve (MLP, $\lambda = {}$, hidden = [100, 100, 100])'.format(reg)
-	save_file_name = 'MLP'
-	learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
+	if lc:
+		title = 'Learning Curve (MLP, $\lambda = {}$, hidden = [100, 100, 100])'.format(reg)
+		save_file_name = 'MLP'
+		learning_curve_wrapper(model, save_file_name, title, X_train, y_train)
 	print('********************************')
 
-# main driver function
-if __name__ == '__main__':
+def PCA(X, target_pct = 0.99, k = -1):
+	'''
+		X has dimension m x n.
+		Generate principal components of the data.
+	'''
+	# zero out the mean
+	m, n = X.shape
+	mu = X.mean(axis = 0).reshape(1, -1)
+	X = X - np.repeat(mu, m, axis = 0)
+	# unit variance
+	var = np.multiply(X, X).sum(axis = 0)
+	std = np.sqrt(var).reshape(1, -1)
+	X = np.nan_to_num(np.divide(X, np.repeat(std, m, axis = 0)))
+	# svd
+	U, S, V = np.linalg.svd(X.T @ X)
+	if k == -1:
+		# calculate target k
+		total_var = sum(S ** 2)
+		accum = 0.
+		k = 0
+		while k < len(S):
+			accum += S[k] ** 2
+			if accum / total_var >= target_pct:
+				break
+			k += 1
+	# projection
+	X_rot = X @ U[:, :k + 1]
+	return X_rot, S ** 2, k
+
+def PCA_analysis(D, title = 'Relative Variance Preservation', savename = 'PCA.png'):
+	'''
+		Generate variance preservation analysis of the PCA.
+	'''
+	total_var = sum(D ** 2)
+	D /= total_var
+	plt.style.use('ggplot')
+	plt.title(title)
+	plt.plot(range(len(D)), D)
+	plt.xlabel("Order of eigenvalue")
+	plt.ylabel("Percentage of variance")
+	plt.savefig(savename, format = 'png')
+	plt.close()
+
+def alg_batch(X_train, y_train, X_test, y_test):
 	logreg(X_train, y_train, X_test, y_test)
 	linearSVM(X_train, y_train, X_test, y_test)
 	kernelSVM(X_train, y_train, X_test, y_test)
 	MLP(X_train, y_train, X_test, y_test)
+# main driver function
+if __name__ == '__main__':
+	print('==> Running Algorithms on multiclass data...')
+	# alg_batch(X_train, y_train, X_test, y_test)
+	print('============================================')
+	print('==> Running PCA multiclass data...')
+	X_train_rot, D_train, k_train = PCA(X_train)
+	# PCA_analysis(D_train, title = 'PCA Analysis for Training Data', \
+		# savename = 'PCA_train.png')
+	# X_test_rot, D_test, k_test = PCA(X_test, k = k_train)
+	# alg_batch(X_train_rot, y_train, X_test_rot, y_test)
