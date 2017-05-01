@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+<title> CS 152 Final Project web page </title>
+<style type = "text/css">
+p.paragraph {
+    width: 750px;
+    line-height: 150%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-yw4l{vertical-align:top}
+
+</style>
+<body style="padding-bottom: 500px">
+
+    <div id="wrapper">
+
+        <div class="container">
+
+            <section id="top" class="section docs-heading">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="big-title text-center">
+                            <h1>Intrusion Detection by Different Machine Learning Techniques</h1>
+                            <p class="lead">Zhepei Wang, Yiqing Cai</p>
+                        </div>
+                        <!-- end title -->
+                    </div>
+                    <!-- end 12 -->
+                </div>
+                <!-- end row -->
+
+                <hr>
+
+            </section>
+            <!-- end section -->
+
+            <div class="row">
+
+                <div class="col-md-3">
+                    <nav class="docs-sidebar" data-spy="affix" data-offset-top="300" data-offset-bottom="200" role="navigation">
+                        <ul class="nav">
+                            <li><a href="#line1">Project Introduction</a></li>
+                            <li><a href="#line2">Data Description</a></li>
+                            <li><a href="#line3">Binary Classification</a></li>
+                            <li><a href="#line4">Multi-class Classification</a></li>
+                            <li><a href="#line5">PCA - Binary</a></li>
+                            <li><a href="#line6">PCA - Multi-class</a></li>
+                            <li><a href="#line7">Discussion and Future Works</a></li>
+                            <li><a href="#line8">References and links</a></li>
+                        </ul>
+                    </nav >
+                </div>
+
+                <div class = "col-md-9">
+                    <section id="line1" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> Project Introduction <a href="#top">back to top</a><hr></h2>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="paragraph">
+                            Intrusion detection is an important part of modern computer security systems. An intrusion detection system should be able to decide if a certain user operation is abnormal. Then it should be able to decide if such abnormal behavior is an intrusion attempt according to different features such as protocol used and connection length.
+                            </p>
+                            <p class="paragraph">
+                            Our project object is to compare and contrast the performanc (speed and accuracy) of different machine learning algorithms to detect intrusion attempts. We also want to explore optimization options for those algorithms. The algorithms we chose for this projects are:
+                            Logistic Regression, Linear SVM, rbf Kernel SVM, and MLP. For each of the algorithms, we run both binary classification and multi-class classification.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class = "col-md-9">
+                    <section id="line2" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> Data Description <a href="#top">back to top</a><hr></h2>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="paragraph">
+                            The data we used was the KDD(Knowledge Discovery and Data Mining) Cup data by Special Interest Group in 1999. The dataset contained 41 features and 22 types of attack. We used 10 percent of the training set for a total of 500,000 samples and split the dataset into 75% training data and 25% testing data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class = "col-md-9">
+                    <section id="line3" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> Binary Classification <a href="#top">back to top</a><hr></h2>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="paragraph">
+                            For binary classification, all we cared was that if the action was an intrusion attempt or not. The algorithms will only tell if an action was safe and will not decide what kind of intrusion attempt it was. Our results were mainly represented by confusion matrices. Class 0 means normal activity and class 1 means intrusion attempt.
+                            </p>
+
+                            <figure>
+                                <img src="LRBin.jpg" alt="Logistic Regression" width = 600>
+                                <figcaption>Fig 1. - Logistic Regression, l2-norm-reg = 0.2</figcaption>
+                            </figure>
+
+                            <br>
+                            <figure>
+                                <img src="LSVMBin.png" alt="Linear SVM" width = 600>
+                                <figcaption>Fig 2. - Linear SVM, C = 1.0</figcaption>
+                            </figure>
+
+                            <br>
+                            <figure>
+                                <img src="KSVMBin.png" alt="rbf SVM" width = 600>
+                                <figcaption>Fig 3. - rbf Kernel SVM, C = 1.0</figcaption>
+                            </figure>
+
+                            <br>
+                            <figure>
+                                <img src="MLPBin.png" alt="MLP" width = 600>
+                                <figcaption>Fig 4. - MLP, l2-norm-reg=0.01, 3 hidden layers each with 100 perceptrons</figcaption>
+                            </figure>
+
+                            <p class="paragraph"> We can see that all methods have very high accuracy. We also listed other interesting results for discuss. 
+                            </p>
+                            <table class="tg">
+                                <tr>
+                                  <th class="tg-031e">Algorithm</th>
+                                  <th class="tg-yw4l">LR</th>
+                                  <th class="tg-yw4l">lin_SVM</th>
+                                  <th class="tg-yw4l">rbf-SVM</th>
+                                  <th class="tg-yw4l">MLP</th>
+                                </tr>
+                                <tr>
+                                  <td class="tg-yw4l">Training Accuracy</td>
+                                  <td class="tg-yw4l">0.9859</td>
+                                  <td class="tg-yw4l">0.9885</td>
+                                  <td class="tg-yw4l">1.0000</td>
+                                  <td class="tg-yw4l">0.9938</td>
+                                </tr>
+                                <tr>
+                                  <td class="tg-yw4l">Test Accuracy</td>
+                                  <td class="tg-yw4l">0.9858</td>
+                                  <td class="tg-yw4l">0.9885</td>
+                                  <td class="tg-yw4l">0.9960</td>
+                                  <td class="tg-yw4l">0.9935</td>
+                                </tr>
+                                <tr>
+                                  <td class="tg-yw4l">Precision</td>
+                                  <td class="tg-yw4l">0.9984</td>
+                                  <td class="tg-yw4l">0.9945</td>
+                                  <td class="tg-yw4l">1.0000</td>
+                                  <td class="tg-yw4l">0.9994</td>
+                                </tr>
+                                <tr>
+                                  <td class="tg-yw4l">Recall</td>
+                                  <td class="tg-yw4l">0.9839</td>
+                                  <td class="tg-yw4l">0.9911</td>
+                                  <td class="tg-yw4l">0.9951</td>
+                                  <td class="tg-yw4l">0.9925</td>
+                                </tr>
+                                <tr>
+                                  <td class="tg-yw4l">f1-score</td>
+                                  <td class="tg-yw4l">0.9911</td>
+                                  <td class="tg-yw4l">0.9928</td>
+                                  <td class="tg-yw4l">0.9975</td>
+                                  <td class="tg-yw4l">0.9960</td>
+                                </tr>
+                                <tr>
+                                  <td class="tg-yw4l">Time for training (s)</td>
+                                  <td class="tg-yw4l">6.46 (100 itrs)</td>
+                                  <td class="tg-yw4l">34.87</td>
+                                  <td class="tg-yw4l">2491.05</td>
+                                  <td class="tg-yw4l">26.65 (14 itrs)</td>
+                                </tr>
+                            </table>                                
+                            <p class="paragraph"> 
+                            As we can see from the table, all algorithms did great job for binary classification. This means that the dataset is likely to be linearly separable. Non linear classifiers performs consistently better than linear classifiers but also has much longer training time, especially rbf-SVM.
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class = "col-md-9">
+                    <section id="line4" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> Multi-Class Classification <a href="#top">back to top</a><hr></h2>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="paragraph">
+                            In multi-class classification, the algorithms will try to find out what the actual intrusion attempt was instead of just telling if the behavior is an intrusion. The accuracy in this section is calculated according to whether the algorithm returns the correct intrusion method. Confusion matrix is not as helpful for multi-class classification and is thus not provided. 
+                            </p>
+                        </div>
+                    </div>
+
+                    <table class="tg">
+                    <tr>
+                      <th>Algorithms</th>
+                      <th>LR</th>
+                      <th>lin-SVM</th>
+                      <th>rbf-SVM</th>
+                      <th>MLP</th>
+                    </tr>
+                    <tr>
+                      <td>Training Accuracy</td>
+                      <td>0.9862</td>
+                      <td>0.9858</td>
+                      <td>0.9998</td>
+                      <td>0.9873</td>
+                    </tr>
+                    <tr>
+                      <td>Test Accuracy</td>
+                      <td>0.9872</td>
+                      <td>0.9854</td>
+                      <td>0.9950</td>
+                      <td>0.9882</td>
+                    </tr>
+                    <tr>
+                      <td>Time for training (s)</td>
+                      <td>149.57 (100 itrs)</td>
+                      <td>172.81 (1000 itrs)</td>
+                      <td>5681.33</td>
+                      <td>31.56 (11 itrs)</td>
+                    </tr>
+                    </table>
+                    <p class="paragraph">
+                    As we can see from the table, the algorithms worked similarly on multi-class classification as they worked on binary classification with high accuracy and higher performance with non-linear algorithms. The performance was not affected by the demand to distinguish between different types of attacks.
+                    </p>
+                </div>
+
+                <div class = "col-md-9">
+                    <section id="line5" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> PCA for Binary Classification <a href="#top">back to top</a><hr></h2>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="paragraph">
+                            Because our dataset has a rather big feature space of 41 dimensions, we decided to use Principle Component Analysis to reduce the dimension. The goal of PCA is to find k dimensional representation that preserves maximal variance. Thus we will be able to speed up the training process without losing too much accuracy. 
+                            </p>
+
+                            <p class = "paragraph">
+                            We set our target variance capture rate to 99% and we managed to reduce the dimension from 41 to 17 while keeping 99% variance.
+                            </p>
+                            <figure>
+                                <img src="PCA.png" alt="PCA" width = 600>
+                                <figcaption>Fig 5. - PCA eigenvalue vs variance capture</figcaption>
+                            </figure>
+
+                            <table class="tg">
+                              <tr>
+                                <th>Algorithm</th>
+                                <th>LR</th>
+                                <th>lin_SVM</th>
+                                <th>rbf-SVM</th>
+                                <th>MLP</th>
+                              </tr>
+                              <tr>
+                                <td>Training Accuracy</td>
+                                <td>0.99922</td>
+                                <td>0.9878</td>
+                                <td>0.9992</td>
+                                <td>0.9990</td>
+                              </tr>
+                              <tr>
+                                <td>Test Accuracy</td>
+                                <td>0.9729</td>
+                                <td>0.9810</td>
+                                <td>0.9891</td>
+                                <td>0.9891</td>
+                              </tr>
+                              <tr>
+                                <td>Precision</td>
+                                <td>0.9814</td>
+                                <td>0.9914</td>
+                                <td>0.9996</td>
+                                <td>0.9945</td>
+                              </tr>
+                              <tr>
+                                <td>Recall</td>
+                                <td>0.9848</td>
+                                <td>0.9848</td>
+                                <td>0.9868</td>
+                                <td>0.9918</td>
+                              </tr>
+                              <tr>
+                                <td>f1-score</td>
+                                <td>0.9831</td>
+                                <td>0.9881</td>
+                                <td>0.9931</td>
+                                <td>0.9932</td>
+                              </tr>
+                              <tr>
+                                <td>Time for training (s)</td>
+                                <td>3.87 (39 itrs)</td>
+                                <td>39.00</td>
+                                <td>12.65</td>
+                                <td>42.41 (22 itrs)</td>
+                              </tr>
+                            </table>
+
+                            <p class="paragraph">
+                            From the table, we can see couple of interesting changes and improvements. First of all, algorithms accuracy were affected by the PCA but the change wasmostly nominal. Second, rbf-SVM still has the best accuracy and PCA greatly reduced its training time to 1/20 of its time before optimization. This shows promise for PCA optimization and we will discuss PCA's effectiveness on multi-class classification in next section.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class = "col-md-9">
+                    <section id="line6" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> PCA on Multi-class Classification <a href="#top">back to top</a><hr></h2>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="tg">
+                                <tr>
+                                  <th>Algorithms</th>
+                                  <th>LR</th>
+                                  <th>lin-SVM</th>
+                                  <th>rbf-SVM</th>
+                                  <th>MLP</th>
+                                </tr>
+                                <tr>
+                                  <td>Training Accuracy</td>
+                                  <td>0.9919</td>
+                                  <td>0.9888</td>
+                                  <td>0.9991</td>
+                                  <td>0.9985</td>
+                                </tr>
+                                <tr>
+                                  <td>Test Accuracy</td>
+                                  <td>0.9153</td>
+                                  <td>0.7643</td>
+                                  <td>0.9817</td>
+                                  <td>0.9792</td>
+                                </tr>
+                                <tr>
+                                  <td>Time for training (s)</td>
+                                  <td>152.36 (100 itrs)</td>
+                                  <td>590.53 (1000 itrs)</td>
+                                  <td>21.05</td>
+                                  <td>85.10 (28 itrs)</td>
+                                </tr>
+                            </table>
+
+                            <p class="paragraph">
+                            The table provided similar results as the binary classification: slightly lower accuracy, faster training (rbf-SVM sped up to 1/20). Another interesting point: linear SVM had much lower accuracy and much higher training time. This is likely due to the reduction in dimension: linear SVM was unable to separate the data efficiently. 
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class = "col-md-9">
+                    <section id="line7" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> Discussion and Future Works <a href="#top">top</a><hr></h2>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="paragraph">
+                            We found that all four models we used yield very high accuracy while nonlinear models yield slightly higher accuracy than linear ones. rbf kernel had the highest accuracy but had the slowest training time. We also found that PCA can help reduce the training time with minimal negative affect on accuracy. 
+                            </p>
+
+                            <p class="paragraph">
+                            The algorithms and dataset can also be used for binary classification based on attack types (i.e. identify a specific kind of intrusion attempts). We can also remove the labels from the dataset and us it for unsupervised learning such as clustering (e.g. K nearest neighbors).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class = "col-md-9">
+                    <section id="line8" class="section"> 
+                        <div class = "row">
+                            <div class="col_md-12 left-align">
+                                <h2 class = "dark-text"> References and links <a href="#top">top</a><hr></h2>
+                                <p class="paragraph">
+                                Application of Machine Learning Algorithms to KDD Intrusion Detection within Misuse Detection Context (Sabhnani & Serpen)
+                                </p>
+                                <p class="paragraph">
+                                Why Machine Learning Algorithms Fail in Misuse Detection on KDD Intrusion Dataset (Sabhnani & Serpen)
+                                </p>
+                                <p class="paragraph">
+                                Intrusion detection using neural networks and support vector machines (Mukkamala et. al.)
+                                </p>
+                                <a href="http://www.kdd.org/kdd-cup/view/kdd-cup-1999/Data">KDD Cup 1999</a>
+                                <br>
+                                <a href="http://scikit-learn.org/stable/">Scikit-learn</a>
+                                <br>
+                                <a href="http://pandas.pydata.org/">Pandas</a>
+                                <br>
+                                For suggestions and improvements, please visit our github: 
+                                <a href="https://github.com/Haunter17/NeuralNetworks">GitHub</a>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </body>
+</head>
